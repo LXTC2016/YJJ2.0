@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     TouchableHighlight,
     FlatList,
+    TextInput,
 } from 'react-native';
 import PropTypes from "prop-types";
 import CommonService, { formatMenu } from '../../services/common';
@@ -27,7 +28,7 @@ import DeviceInfo from 'react-native-device-info';
 import FileHelper from "../../helpers/fileHelper.config";
 import StyleConfig from '../../config/style.config'
 import VersionUpdateService from '../../services/versionupdate'
-
+import config from '../../config/company.config'
 let styles = null;
 let { height, width } = Dimensions.get('window');
 const resetAction = NavigationActions.reset({
@@ -49,12 +50,17 @@ export function InitSWData(data: Array) {
 }
 let common = new CommonService();
 
+const DEFAULT_ARRAY_SIZE = 5;
+// switch company
 export default class switchManuFacturers extends PureComponent {
     constructor(prop) {
         super(prop);
         this.state = {
             UserManuFacturers: [],
             IsShow: false,//显示切换厂商确定对话框
+            dataItems: [], // 临时存放
+            refresh: 0,
+            searchText: '',
         }
         const Cancel = axios.CancelToken.source();
         this.cancelaxios = Cancel;
@@ -65,6 +71,8 @@ export default class switchManuFacturers extends PureComponent {
         };
         swNavigation = prop.navigation;
         this._mounted = true;
+        this.inputComponents = [];
+        this.pureList = [];
     }
     componentWillUnmount() {
         this._mounted = false;
@@ -96,6 +104,7 @@ export default class switchManuFacturers extends PureComponent {
                         })
                     }
                     self.initdata(csdata);
+                    self.setState({dataItems: csdata});
                 } else {
                     if (hadmessagebar) {
                         Alert.alert("提示", rresult.message, [
@@ -114,6 +123,7 @@ export default class switchManuFacturers extends PureComponent {
             });
         }
     }
+
     initdata(data) {
         let self = this;
         let renderdata = [];
@@ -151,8 +161,28 @@ export default class switchManuFacturers extends PureComponent {
                 renderdata.push(formatpagedata);
             }
         }
+        self.setState({ UserManuFacturers: renderdata }, () => {
+        });
+    }
 
-        self.setState({ UserManuFacturers: renderdata });
+    // search
+    search = () => {
+        const text = this.input._lastNativeText;
+        let search = [];
+        const allItems = this.state.dataItems;
+        if (allItems.length != 0) {
+            for (let index = 0; index < allItems.length; index++) {
+                if (allItems[index].Name.indexOf(text) != -1) {
+                    search.push(allItems[index]);
+                }
+            }
+        }
+        this.initdata(search);
+        this.setState({refresh: this.state.refresh++})
+    }
+
+    _inputOnLayout(event) {
+        this.inputComponents.push(event.nativeEvent.target)
     }
 
     render() {
@@ -169,17 +199,36 @@ export default class switchManuFacturers extends PureComponent {
                     <TouchableHighlight style={styles.back} onPress={() => { this.props.navigation.goBack(); }} activeOpacity={0.8} underlayColor={CompanyConfig.AppColor.OnPressSecondary} >
                         <View><SvgUri width={getResponsiveValue(40)} height={getResponsiveValue(40)} fill={StyleConfig.Main} source="back" /></View>
                     </TouchableHighlight>
-                    <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+                    <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', }}>
                         <View style={{ justifyContent: 'center', alignItems: 'center', }}>
-                            <Text style={{ fontSize: getResponsiveValue(32), color: StyleConfig.FocalFront, paddingRight: getResponsiveValue(35) }}>切换厂商</Text>
+                            <Text style={{ fontSize: getResponsiveValue(32), color: StyleConfig.FocalFront, paddingLeft: getResponsiveValue(210) }}>切换厂商</Text>
                         </View>
-                        <TouchableOpacity
-                            style={{ justifyContent: 'center', alignItems: 'center', right: getResponsiveValue(10), position: 'absolute' }}
-                            onPress={() => {
-
-                            }}>
-                            <View />
-                        </TouchableOpacity>
+                    </View>
+                    <View style={ styles.searchTextView }>
+                        <View style = {{ marginStart: getResponsiveValue(10)}}>
+                                <SvgUri
+                                    width = { getResponsiveValue(40) }
+                                    height = { getResponsiveValue(40) }
+                                    fill = { StyleConfig.Main }
+                                    source = 'search'
+                                />
+                            </View>
+                        <TextInput
+                            ref = { (input) => { this.input = input}}
+                            style= { styles.inputView }
+                            autoCapitalize = 'none'
+                            autoCorrect = {false}
+                            returnKeyType = {'done'}
+                            placeholderTextColor={CompanyConfig.formatColor(StyleConfig.Main, "b3")}
+                            underlineColorAndroid="transparent"
+                            disableFullscreenUI = {true}
+                            placeholder = { '搜索' }
+                            onChangeText = { (text) => {
+                                this.setState({searchText: text})
+                            }}
+                            value = {this.state.searchText}
+                            onEndEditing={ self.search }
+                        />
                     </View>
                 </View>
                 <View style={{
@@ -194,11 +243,12 @@ export default class switchManuFacturers extends PureComponent {
                         horizontal={true}
                         pagingEnabled={true}
                         showsHorizontalScrollIndicator={false}
-                        data={self.state.UserManuFacturers}
+                        data={ self.state.UserManuFacturers }
+                        extraData={ self.state.refresh }
                         getItemLayout={(data, index) => ({ length: width, offset: width * index, index })}
                         initialNumToRender={1}
                         keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item, index }) => (
+                        renderItem={({ item, index}) => (
                             <View style={{
                                 width: width,
                                 height: height - getResponsiveValue(90),
@@ -209,6 +259,7 @@ export default class switchManuFacturers extends PureComponent {
                                 <ManuFacturers PageManuFacturers={item} />
                             </View>
                         )}
+                        refreshing = {true}
                     />
                 </View>
 
@@ -220,23 +271,14 @@ export default class switchManuFacturers extends PureComponent {
 export class ManuFacturers extends PureComponent {
     constructor(props) {
         super(props);
-        this.state = {
-            PageManuFacturers: props.PageManuFacturers
-        }
     }
     static defaultProps = {
         PageManuFacturers: []
     };
-    static propTypes = {
-        //ManuFacturerList: PropTypes.arrayOf(PropTypes.object),
-    };
 
     render() {
         let self = this;
-        let data = self.state.PageManuFacturers;
-        if (data.length === 0) {
-            data = self.props.PageManuFacturers;
-        }
+        let data = self.props.PageManuFacturers;
         if (data.length > 0)
             return (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -261,9 +303,6 @@ export class ManuFacturers extends PureComponent {
 export class ManuFactureItem extends PureComponent {
     constructor(props) {
         super(props);
-        this.state = {
-            itemdatas: props.itemdatas
-        }
         const Cancel = axios.CancelToken.source();
         this.cancelaxios = Cancel;
         this.service = new Services(Cancel);
@@ -280,10 +319,7 @@ export class ManuFactureItem extends PureComponent {
     }
     render() {
         let self = this;
-        let data = self.state.itemdatas;
-        if (data.length === 0) {
-            data = self.props.itemdatas;
-        }
+        let data = self.props.itemdatas;
         let style = {
             backgroundColor: '#ffffffb3',
         };
@@ -342,12 +378,12 @@ export class ManuFactureItem extends PureComponent {
                                                 data: rresult.data
                                             });
                                             global.AppAuthentication = rresult.data;
-                                            global.storage.load({
-                                                key: 'BaiduPushChannelID',
-                                                autoSync: false
-                                            }).then(channelid => {
-                                                common.AddDeviceToBaiduPushTag(channelid).then((result) => { })
-                                            });
+                                            // global.storage.load({
+                                            //     key: 'BaiduPushChannelID',
+                                            //     autoSync: false
+                                            // }).then(channelid => {
+                                            //     common.AddDeviceToBaiduPushTag(channelid).then((result) => { })
+                                            // });
                                             let menuList = rresult.data.MenuList;
                                             formatMenu(menuList);
                                             global.storage.save({ key: "AppMenu", data: menuList });
@@ -392,6 +428,7 @@ export class ManuFactureItem extends PureComponent {
                         alignItems: 'center',
                         flexDirection: 'row',
                     }}>
+                        {/* <-- todo bug here --> */}
                         <SyncImg imgSize={120} imgSource={data.Logo} imgStyle={{ height: getResponsiveValue(72), width: getResponsiveValue(72), borderRadius: getResponsiveValue(36), marginLeft: getResponsiveValue(21) }} />
                         <Text style={{
                             fontSize: getResponsiveFontSize(32),
@@ -463,7 +500,8 @@ function setStyle() {
             width: getResponsiveValue(AppConfig.design.width),
             backgroundColor: StyleConfig.PopupBackground,
             flexDirection: 'row',
-            alignItems: 'center'
+            alignItems: 'center',
+
         },
         back: {
             height: getResponsiveValue(69),
@@ -517,7 +555,27 @@ function setStyle() {
             marginLeft: getResponsiveValue(20)
 
         },
-
+        searchTextView: {
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            width: getResponsiveValue(300),
+            height: getResponsiveValue(69),
+            // opacity: 0.2,
+            borderRadius: 10,
+            backgroundColor: CompanyConfig.formatColor(CompanyConfig.AppColor.DescriptionFront, "4d")
+        },
+        inputView: {
+            marginLeft: getResponsiveValue(27),
+            // marginTop: getResponsiveValue(5),
+            width: getResponsiveValue(250),
+            height: getResponsiveValue(69),
+            borderColor: 'transparent',
+            padding: 0,
+            fontSize: getResponsiveFontSize(32),
+            textAlignVertical: 'center',
+            color: StyleConfig.Main,
+        }
     });
     return styles;
 }

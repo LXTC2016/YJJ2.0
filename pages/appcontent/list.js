@@ -30,7 +30,9 @@ const RNFetchBlobDownloadStorage = {};
 
 let contentStyles = null;
 const rootDir = Platform.OS === 'ios' ? `${RNFetchBlob.fs.dirs.DocumentDir}/yjj` : `${RNFetchBlob.fs.dirs.SDCardDir}/yjj`;
-
+/**
+ * company introduce doc;
+ */
 export class ContentList extends BaseComponent {
   static propTypes = {
     menu: PropTypes.any,
@@ -88,6 +90,7 @@ export class ContentList extends BaseComponent {
         return (<ContentDetail content={content} navigation={this.props.navigation} style={{ top: getResponsiveValue(120), right: getResponsiveValue(20) }} />);
       }
     }
+    // company style, just about company work space
     else {
       if (contentList == null || contentList.length == 0) {
         return (this.isDidMount ? (<NotFoundPage />) : null);
@@ -380,10 +383,10 @@ export class ContentItem extends Component {
       let path = `${rootDir}/${md5FileName}`;
 
       RNFetchBlob.fs.exists(path).then((exists) => {
-        console.log("🔴 文件是否存在: ", exists);
+        //console.log("🔴 文件是否存在: ", exists);
         if (exists) {
           FileManager.md5Valid(path, "", true, (valid, error) => {
-            console.log("🔵 文件是否正确: ", valid);
+            //console.log("🔵 文件是否正确: ", valid);
             this.setState({ isFileExistLocal: valid })
           });
         } else {

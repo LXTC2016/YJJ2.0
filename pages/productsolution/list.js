@@ -5,14 +5,16 @@ import {
     ImageBackground,
     View,
     FlatList,
-    TouchableWithoutFeedback
+    TouchableWithoutFeedback,
+    Dimensions,
+    TouchableOpacity,
+    Image
 } from 'react-native';
 import PropTypes from "prop-types";
 import ProductService from '../../services/productsolution.js';
 import AppConfig from '../../config/app.config.js';
 import CompanyConfig from '../../config/company.config.js';
 import { getResponsiveValue, getResponsiveFontSize } from '../../assets/default.theme.js';
-
 // import { StackNavigator } from 'react-navigation';
 import ProductListItem from '../../components/ProductListItem.js';
 
@@ -327,6 +329,11 @@ export class ProductSolutionList extends Component {
             return this.props.ProductList;
         }
     }
+
+    getOffset() {
+        return Dimensions.get('window')
+      }
+      
     viewabilityConfig = { viewAreaCoveragePercentThreshold: 50 }
     render() {
         setStyle();
@@ -334,10 +341,14 @@ export class ProductSolutionList extends Component {
         let marginStyles = { marginTop: getResponsiveValue(0) };
         let ProductSolutionLists = this.getData();
         if(!ProductSolutionLists||ProductSolutionLists.length<=0){ProductSolutionLists=null}
+        if (global.NeedLogin) {
+            ProductSolutionLists = []
+        }
         return (
             <View style={[productStyles.productListView]} >
                 <FlatList
                     key={'shows'}
+                    ref = {(list) => this.productList = list }
                     numColumns={3}
                     data={ProductSolutionLists}
                     columnWrapperStyle={{ justifyContent: 'flex-start' }}
@@ -364,6 +375,36 @@ export class ProductSolutionList extends Component {
                         (this.state.GetDataOver ? (<NotFond />) : null)
                     )}
                 />
+                {/* Move Offset */}
+                {/* <TouchableOpacity
+                    style = {{ position: 'absolute', top: this.getOffset().height - 50, left: this.getOffset().width - 50, zIndex: 100}}
+                    activeOpacity = { 0.8 }
+                    onPress = { () => {
+                        this.productList.scrollToIndex({viewPosition: 0, index: 0});
+                    }}
+                    setOpacityTo = {{ value: 10, duration: 0.5}}
+                >
+                <Image
+            source = { require('../../assets/icons/baktoindex.png')}
+            style = {{ width: getResponsiveFontSize(50), height: getResponsiveValue(50)}}
+          />
+                </TouchableOpacity> */}
+                {/* Move Offset */}
+        { 
+          this.disabled() && <TouchableOpacity
+            style = {{ position: 'absolute', top: this.getOffset().height - 50, left: this.getOffset().width - 50, zIndex: 100}}
+            activeOpacity = { 0.8 }
+            onPress = { () => {
+                this.productList.scrollToIndex({viewPosition: 0, index: 0});
+            }}
+            setOpacityTo = {{ value: 10, duration: 0.5}}
+          >
+            <Image
+              source = { require('../../assets/icons/baktoindex.png')}
+              style = {{ width: getResponsiveFontSize(50), height: getResponsiveValue(50)}}
+            />
+          </TouchableOpacity>
+        }
             </View>
         )
     }

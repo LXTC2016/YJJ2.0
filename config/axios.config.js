@@ -47,17 +47,17 @@ global.AppAuthentication = null;
 		});
 })();
 
-(function setChannelID() {
-	storage.load(
-		{
-			key: 'BaiduPushChannelID',
-			autoSync: false
-		}).then(channelid => {
-			headers["x-channelid"] = channelid
-		}).catch(err => {
+// (function setChannelID() {
+// 	storage.load(
+// 		{
+// 			key: 'BaiduPushChannelID',
+// 			autoSync: false
+// 		}).then(channelid => {
+// 			headers["x-channelid"] = channelid
+// 		}).catch(err => {
 
-		});
-})();
+// 		});
+// })();
 
 axios.interceptors.request.use(function (configuration) {
 	//let {authentication}=store.getState(); 

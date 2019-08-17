@@ -8,7 +8,8 @@ if(typeof(config)=='string'){
 // @see CompanyConfigurationManagerModule.java
 export const CompanyAppConfig =  Object.assign({
     env: 'production',
-    baseURL : 'http://app-svc.lixiantuce.com',
+    // baseURL : 'http://app-svc.lixiantuce.com',
+    baseURL: 'http://app-svc.lixiantuce.com',
     uploadUrl : 'http://img2.lixiantuce.com',
     imageBaseUrl : 'http://img2.lixiantuce.com',
     appUpdateUrl : 'http://www.lixiantuce.com/Company/Index/',
@@ -48,8 +49,9 @@ export const CompanyAppConfig =  Object.assign({
     CompanyBGImgWithLogo:{uri:"companybgimgwithlogo"},
     CompanyLogo :{uri:"companylogo"},
     LoginBGImg:{uri:"loginbgimg"},
+    companySysNo: 1394
 }, config);
 // if u r testing or developing, this CompanyId is default;
- // CompanyAppConfig.CompanyID = '00000000-0000-0000-0000-000000000000';
- CompanyAppConfig.env='production';
+CompanyAppConfig.CompanyID = '00000000-0000-0000-0000-000000000000';
+CompanyAppConfig.env='production';
 export default CompanyAppConfig;

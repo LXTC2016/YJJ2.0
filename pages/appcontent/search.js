@@ -270,7 +270,8 @@ export default class ContentSearch extends Component {
                     <View style={pageStyles.searchTextView}>
                         <TextInput autoCapitalize="none"
                             autoCorrect={false} onChangeText={(newText) => this.searchTextChange(newText)} underlineColorAndroid="transparent" style={pageStyles.searchTextInput} />
-                        <View style={{ backgroundColor: '#d5d5d5', width: getResponsiveValue(1158), height: 1 }}></View>
+                        <View style={{ backgroundColor: '#d5d5d5', width: getResponsiveValue(1158), height: 1 }}>
+                        </View>
                     </View>
                     <TouchableHighlight style={{}} onPress={this.search} activeOpacity={0.8} underlayColor={null}>
                         <Text style={pageStyles.searchText}>搜索</Text>

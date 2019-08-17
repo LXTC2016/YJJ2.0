@@ -4,6 +4,9 @@ import {
   ImageBackground,
   View,
   FlatList,
+  TouchableOpacity,
+  Image,
+  Dimensions
 } from 'react-native';
 import PropTypes from "prop-types";
 import ProductService from '../../services/product.js';
@@ -14,7 +17,7 @@ import ProductSearch from '../product/search.js';
 import CustomHeader from '../../components/CustomHeader.js';
 import NotFond from '../../components/NotFond.js';
 import ProductListItem from '../../components/ProductListItem.js';
-
+import { Product } from './singleModifyPrice.js';
 let productStyles = null;
 
 function setStyle() {
@@ -149,7 +152,6 @@ function setStyle() {
       width: getResponsiveValue(1334),
       height: getResponsiveValue(AppConfig.design.height),
       zIndex: 3
-
     }
   });
 
@@ -223,7 +225,6 @@ export default class ProductListAll extends Component {
   getMenu() {
     const { state } = this.props.navigation;
     let menu = this.props.menu;
-
     if ((typeof (menu) == 'undefined' || menu == null) && state.params) {
       if (typeof (state.params.menu) != 'undefined' && state.params.menu != null) {
         menu = state.params.menu;
@@ -371,6 +372,44 @@ export class ProductList extends Component {
   UseSelfData = true;
   DefaultPageSize = 100000;
   GetAllData = false;   //是否已查询出所有商品数据
+  
+  newer = {
+		//CompanyID: "f54bc5fc-a541-4fd2-825e-2c41c1081a93"
+		//CostPrice: 0
+		DefaultImage: null,
+		//DeliveryDate: null
+		GroupProperties: "[]",
+		ImageList: [],
+		IsDownloadImg: 1,
+		LastReplicationDate: "2019-08-15T15:36:29",
+		Material: "其它",
+		MerchantSysNo: 1431,
+		Priority: 1339497,
+		ProductCommonName: "RUI",
+		ProductCommonSysNo: 1305301,
+		ProductID: "",
+		ProductList: "null",
+		ProductName: "RUI",
+		ProductNote: "",
+		ProductStatus: 10,
+		ProductTag: null,
+		ProductType: 0,
+		ProductionCycle: 0,
+		PromotionPrice: 0,
+		PromotionTitle: null,
+		Properties: "[]",
+		RetailPrice: 0,
+		SKUModel: "r",
+		SalePrice: 0,
+		SeriesName: "R系列",
+		SizeHeight: null,
+		SizeLength: null,
+		SizeWidth: null,
+		Stock: 0,
+		StyleName: null,
+		SysNo: 1339497,
+		Weight: null
+	}
   constructor(prop) {
     super(prop);
     this.state = {
@@ -386,16 +425,20 @@ export class ProductList extends Component {
     }
     setStyle();
   }
-
+  
   UNSAFE_componentWillMount() {
-    this.IsMounted = true;
+    
+    if (!global.NeedLogin) {
+      this.IsMounted = true;
 
     this.LoadMenuInfo();
     if (typeof (this.props.ProductList) != 'undefined' && this.props.ProductList != null) {
       this.UseSelfData = false;
     }
-
     this.appendProducts();
+    } else {
+      this.getProduct_NoLogined();
+    }
   }
 
   componentWillUnmount() {
@@ -403,11 +446,48 @@ export class ProductList extends Component {
   }
 
   onEndReached = () => {
-    if (this.UseSelfData) {
-      this.appendProducts();
+    
+    if (!global.NeedLogin) {
+      if (this.UseSelfData) {
+        this.appendProducts();
+      } else {
+        if (typeof (this.props.onEndReached) != 'undefined') {
+          this.props.onEndReached();
+        }
+      }
     } else {
-      if (typeof (this.props.onEndReached) != 'undefined') {
-        this.props.onEndReached();
+      this.getProduct_NoLogined();
+    }
+    
+  }
+
+  getProduct_NoLogined() {
+    let productService = new ProductService();
+    let self = this;
+    let SeriesSysNo = this.props.menu.PathParams;
+    SeriesSysNo = JSON.parse(SeriesSysNo).SeriesSysNo;
+    productService.getProducts_NoLogin(global.CompanyConfig.companySysNo, SeriesSysNo).then(response => {
+      let data = response.data;
+      self.asingn(data)
+      self.setState({ProductList: data})
+    })
+  }
+
+  // This function is mainly used to assemble the same structure
+  // as the original data. It has been considered for a long time, 
+  // and no solution has been found. Therefore, it can only be assembled 
+  // by overlapping itself by itself. If there are other better methods,
+  // please change it. Very inefficient
+  asingn(data) {
+    if (data) {
+      for (let index = 0; index < data.length; index++) {
+        let outer = (data[index]);
+        if (outer.ProductCommonImageList != null && outer.ProductCommonImageList.length > 0) {
+
+          outer['ImageList'] = outer['ImageList'].concat(outer.ProductCommonImageList);
+        }
+        (data[index])['CommonProductList'] = [];
+        ((data[index])['CommonProductList'])[0] = outer;
       }
     }
   }
@@ -534,7 +614,6 @@ export class ProductList extends Component {
 
     this.GetAllData = false;
     this.appendProducts(0);
-
     if (typeof (this.props.searchViewSearchHandler) != 'undefined') {
       this.props.searchViewSearchHandler();
     }
@@ -543,8 +622,16 @@ export class ProductList extends Component {
   setSearchViewBackAddress(address) {
     this.refs["productSearch"].setBackAddress(address);
   }
+  
+  getOffset() {
+    return Dimensions.get('window')
+  }
 
+  disabled() {
+    return this.getData().length > 9;
+  }
   render() {
+    let self = this
     let productList = this.getData();
     if (!productList || productList.length <= 0) productList = null
     setStyle();
@@ -553,6 +640,7 @@ export class ProductList extends Component {
       <View style={[productStyles.productListView]} >
         <FlatList
           key={'shows'}
+          ref = {(list) => this.productList = list }
           numColumns={3}
           data={productList}
           columnWrapperStyle={{ justifyContent: 'flex-start' }}
@@ -584,11 +672,48 @@ export class ProductList extends Component {
           searchHandler={(searchObj) => this.searchViewSearchHandler(searchObj)}
           navigation={this.props.navigation}
         />
+        {/* Move Offset */}
+        { this.disabled() && <TouchableOpacity
+            style = {{ position: 'absolute', top: this.getOffset().height - 50, left: this.getOffset().width - 50, zIndex: 100}}
+            activeOpacity = { 0.8 }
+            onPress = { () => {
+              if (this.disabled()) {
+                this.productList.scrollToIndex({viewPosition: 0, index: 0});
+              }
+            }}
+            setOpacityTo = {{ value: 10, duration: 0.5}}
+          >
+            <Image
+              source = { require('../../assets/icons/baktoindex.png')}
+              style = {{ width: getResponsiveFontSize(50), height: getResponsiveValue(50)}}
+            />
+          </TouchableOpacity>}
       </View>
-
     )
-
   }
-
 }
 
+export class product {
+  
+  getProduct() {
+    return pros = {
+      BrandName: null,
+      BrandSysNo: 0,
+      CategoryCode: '',
+      CategoryName: '',
+      CommonProductList: [],
+      DefaultImage: "",
+      MerchantSysNo: 1431,
+      ProductCommonSysNo: 0,
+      ProductName: '',
+      ProductTag: null,
+      PromotionTitle: null,
+      SeriesName: '',
+      SeriesSysNo: 0,
+      StyleName: null,
+      StyleSysNo: 0,
+      SysNo: 0,
+      priority: 0
+    }
+  }
+}

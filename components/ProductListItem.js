@@ -5,7 +5,9 @@ import {
     Text,
     ImageBackground,
     View,
-    TouchableOpacity
+    TouchableOpacity,
+    FlatList,
+    Image
 } from 'react-native';
 import PropTypes from "prop-types";
 import AppConfig from '../config/app.config.js';
@@ -133,7 +135,7 @@ function setStyle() {
 
         TagView: {
             position: 'absolute',
-            width: getResponsiveValue(138),
+            width: getResponsiveValue(200),
             height: getResponsiveValue(44),
             left: getResponsiveValue(17),
             top: getResponsiveValue(28),
@@ -151,7 +153,7 @@ function setStyle() {
             position: 'absolute',
             left: getResponsiveValue(20),
             top: getResponsiveValue(0),
-            width: getResponsiveValue(100),
+            width: getResponsiveValue(150),
             height: getResponsiveValue(36),
             zIndex: 2,
             fontSize: getResponsiveFontSize(24),
@@ -159,6 +161,14 @@ function setStyle() {
             textAlignVertical: 'center',
             includeFontPadding: false,
             backgroundColor: 'transparent',
+        },
+        tagContainer: {
+            position: 'absolute',
+            left: getResponsiveValue(17),
+            top: getResponsiveValue(28),
+            flex: 1,
+            flexDirection: 'column',
+            justifyContent: 'flex-start'
         },
     });
 
@@ -186,6 +196,7 @@ export default class ProductListItem extends PureComponent {
     }
     componentDidMount() {
         this.getImageUrl();
+        this.props.productTag = this.getProductTag();
     }
     UNSAFE_componentWillMount() {
         this.isLive = false;
@@ -218,7 +229,6 @@ export default class ProductListItem extends PureComponent {
             }
         }
         return productTag;
-
     }
 
     render() {
@@ -255,13 +265,15 @@ export default class ProductListItem extends PureComponent {
                             }
                         </ImageBackground>
                     </ImageBackground> : null}
-
                 </TouchableOpacity>
                 {
                     this.props.productTag ?
                         (<View style={productStyles.TagView}>
                             <View style={productStyles.TagBgView}>
-                                <SvgUri width={getResponsiveValue(138)} height={getResponsiveValue(44)} fill={'#fd180d'} source="tag" />
+                                <Image 
+                                    source = { require('../assets/icons/redtag.png')}
+                                    style = {{ width: getResponsiveValue(290), height: getResponsiveValue(36)}}
+                                />
                             </View>
                             <Text style={productStyles.TagViewText}>{this.getProductTag()}</Text>
                         </View>) : null

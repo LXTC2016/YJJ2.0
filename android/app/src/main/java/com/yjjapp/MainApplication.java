@@ -119,7 +119,8 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        SoLoader.init(this, /* native exopackage */ false);
+         /* native exopackage */ 
+        SoLoader.init(this,false);
 
         Stetho.initializeWithDefaults(this);
         OkHttpClient client = new OkHttpClient.Builder().connectTimeout(0, TimeUnit.MILLISECONDS)
@@ -134,7 +135,6 @@ public class MainApplication extends Application implements ReactApplication {
         //        mPatchManager.loadPatch();
         //        try {
         //            // .apatch file path
-        //            // TODO: 2017/10/29 ���ز����� ����Ӧ��Ŀ¼��
         //            String patchFileString = Environment.getExternalStorageDirectory().getAbsolutePath() + APATCH_PATH;
         //            mPatchManager.addPatch(patchFileString);
         //            Log.d(TAG, "apatch:" + patchFileString + " added.");

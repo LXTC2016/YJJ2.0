@@ -20,7 +20,9 @@ function setStyle() {
 
     return productStyles;
 }
-
+/**
+ * product list page
+ */
 export default class ProductListPage extends Component {
     constructor(prop) {
         super(prop);

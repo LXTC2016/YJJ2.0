@@ -24,7 +24,7 @@ import DataDownloadService from '../../services/datadownload.js';
 import axios from "axios";
 
 // import codePush from 'react-native-code-push';
-const codePushVersion = '.5';
+const codePushVersion = '.0';
 let moreStyles;
 
 const resetActionToHome = NavigationActions.reset({

@@ -197,7 +197,6 @@ export default class SplashScreen extends Component {
     this.autoNavigateHomePage = this.autoNavigateHomePage.bind(this);
     this.iniData = this.iniData.bind(this);
   }
-  // 首页过渡自动导航
   autoNavigateHomePage() {
     let self = this;
     if (this.timer) {
@@ -396,7 +395,6 @@ export default class SplashScreen extends Component {
   }
 }
 
-// 首页菜单按钮
 export class HomeMenuItem extends Component {
   static propTypes = {
     menu: PropTypes.any
@@ -573,7 +571,7 @@ export class HomeC extends Component {
             activeOpacity={0.8}
             underlayColor={CompanyConfig.StyleColor.HomePageA.MenuItemPressBackground}
           >
-            <SvgUri width={sizeWidth} height={sizeWidth} fill={CompanyConfig.AppColor.Main} source="updatedata" />
+            <SvgUri width={sizeWidth + 5} height={sizeWidth + 5} fill={CompanyConfig.AppColor.Main} source="updatedata" />
           </TouchableHighlight>
           <TouchableHighlight style={[homeStyles.topbarItem]} onPress={() => navigate("MessageCenter")} activeOpacity={0.8} underlayColor={CompanyConfig.StyleColor.HomePageA.MenuItemPressBackground} >
             <View style={{ height: getResponsiveValue(50), width: getResponsiveValue(50), alignItems: 'center', justifyContent: 'center' }}><SvgUri width={sizeWidth} height={sizeWidth} fill={CompanyConfig.AppColor.Main} source="message" />
@@ -646,7 +644,7 @@ export class DefaultHome extends Component {
   componentWillUnmount() {
     this.devicelistener.remove();
   }
-  // confirm the time for updating, next time text user or right now
+
   appIsUpdate() {
     let appPlatformNo = -1;
     if (Platform.OS === 'android') {
@@ -695,7 +693,7 @@ export class DefaultHome extends Component {
       }
     });
   }
-  // check version, if current version is out of date, then download
+
   checkForUpdate() {
     codePush.sync({
       updateDialog: {
@@ -1021,7 +1019,7 @@ export class DefaultHome extends Component {
     }).catch(_ => { });
   }
 
-  renderHomePage(style) {
+  renderHomePage(style: String) {
     let menu = this.state.MenuList;
     if (style === 'A') {
       return <HomeA MenuList={menu} hasNotice={this.state.hasNoticeNum} navigation={this.props.navigation} />;

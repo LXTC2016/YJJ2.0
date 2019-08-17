@@ -77,7 +77,6 @@ export default class DataDownloadService extends SQLiteBase {
         }, () => {
         });
     }
-
     GetDataDownloadInfo(resultHandler, errorHandler) {
         return this.GetDataDownloadStartTime((list) => {
             let startTime = JSON.stringify(list);

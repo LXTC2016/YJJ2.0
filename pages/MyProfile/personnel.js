@@ -35,6 +35,7 @@ let { width } = Dimensions.get('window');
 const renderr = height;
 const windowWidth = width;
 
+// this class is about person manager
 export default class personnel extends Component {
 
   static navigationOptions = {
@@ -382,7 +383,6 @@ export default class personnel extends Component {
         <Animated.View style={this.getStyle()}>
           <UpdateUserInfo refreshOnPress={() => this.componentDidMount()} closeOnPress={() => this.closeInfoWindow()} ref='updateUserInfo' navigation={this.props.navigation}></UpdateUserInfo>
         </Animated.View>
-
         <Spinner IsCanTouch={true} />
         <ProgressHUD ref={c => this._hud = c} />
       </View >
@@ -390,6 +390,7 @@ export default class personnel extends Component {
   }
 }
 
+// This class is used for the right side of the bullet box for employee management.
 export class RightWindow extends Component {
   constructor(props) {
     super(props);

@@ -75,7 +75,9 @@ export class SubMenuItem extends Component {
     </View>);
   }
 }
-
+/**
+ * This is the secondary menu, which is the page after entering the menu from the home page.
+ */
 export default class DispatchMenuAsList extends Component {
 
   static propTypes = {
@@ -83,7 +85,11 @@ export default class DispatchMenuAsList extends Component {
     leftButtonOnPress: PropTypes.func,
     menu: PropTypes.any
   };
-
+  /**
+   * constructor 
+   * @param {menuItems} prop
+   *  collection that Includes parameters in the secondary menus
+   */
   constructor(prop) {
     super(prop);
     this.state = {
@@ -102,7 +108,8 @@ export default class DispatchMenuAsList extends Component {
       const { state } = this.props.navigation;
       menu = state.params.menu;
     }
-
+    window.console.log('menu')
+    window.console.log(menu)
     if (menu != null && menu.Children != null && menu.Children.length > 0) {
       for (let i = 0; i < menu.Children.length; i++) {
         let item = menu.Children[i];
@@ -121,6 +128,7 @@ export default class DispatchMenuAsList extends Component {
   renderMenuList(menuList) {
     if (menuList == null || menuList.length == 0) return null;
     const { navigate } = this.props.navigation;
+    window.console.log(menuList)
     return (
       <ScrollView style={pageStyles.menu} horizontal={true} showsHorizontalScrollIndicator={false} >
         {
@@ -130,6 +138,7 @@ export default class DispatchMenuAsList extends Component {
               <View key={menuItem.SysNo} style={{ height: getResponsiveValue(AppConfig.design.height), justifyContent: 'center', alignItems: 'center' }}>
                 <TouchableHighlight style={pageStyles.menuItem} activeOpacity={0.8} underlayColor={CompanyConfig.StyleColor.HomePageA.MenuItemPressBackground}
                   onPress={() => {
+                    window.console.log(menuItem.LinkCode)
                     navigate(menuItem.LinkCode, { menu: menuItem });
                   }}
                 >

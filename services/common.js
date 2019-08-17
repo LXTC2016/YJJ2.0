@@ -70,9 +70,9 @@ export default class CommonService {
         return axios.get("/Message/QueryUnViewdMessageCount")
     }
 
-    AddDeviceToBaiduPushTag(channelID) {
-        return axios.get("/Message/BaiduPushAddDeviceToTag?channelID=" + encodeURIComponent(channelID))
-    }
+    // AddDeviceToBaiduPushTag(channelID) {
+    //     return axios.get("/Message/BaiduPushAddDeviceToTag?channelID=" + encodeURIComponent(channelID))
+    // }
 
     BindCompanyChannel(channelID) {
         return axios.get("/Message/BindCompanyChannel?channelID=" + encodeURIComponent(channelID))

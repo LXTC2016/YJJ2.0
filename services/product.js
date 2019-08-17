@@ -17,6 +17,18 @@ export default class ProductService extends SQLiteBase {
     InsertDistributorProductMultiple(entity) {
         return axios.post("/Product/InsertDistributorProductMultiple", entity)
     }
+    // check out products  on no-login state, just show a part of items with having auth,
+    // those items could be set in manager system by company application manager;
+    // if user had been signed in, plz break this method. only in this way can application
+    // do normal download; 
+    /**
+     * get product list on no-logined state
+     * @param {company unique key} CompanySysNo 
+     */
+    getProducts_NoLogin(CompanySysNo,SeriesSysNo) {
+        return axios.post(`/Product/GetproductListByCompanySysNo?CompanySysNo=${CompanySysNo}&SeriesSysNo=${SeriesSysNo}`);
+    }
+
     GetProductDetail(productcommonsysNo, SysNo, resultHandler) {
         let base = this;
         let db = this.open();

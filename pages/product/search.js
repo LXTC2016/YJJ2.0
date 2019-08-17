@@ -62,7 +62,6 @@ function setStyle() {
             // opacity: 0.2,
             borderRadius: 10,
             backgroundColor: CompanyConfig.formatColor(CompanyConfig.AppColor.DescriptionFront, "4d"),
-
             flexDirection: "row",
         },
         searchTextIcon: {

@@ -37,7 +37,7 @@ export default class SyncImgFetch extends PureComponent {
         imgSource: PropTypes.oneOfType([PropTypes.number, PropTypes.object, PropTypes.string]),
     };
 
-    PRratio(imgSource, callback: Function) {
+    PRratio(imgSource, callback) {
         let self = this;
         Image.getSize(imgSource, (width, height) => {
             // let PRratio = width / height;

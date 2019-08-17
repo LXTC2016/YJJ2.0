@@ -259,7 +259,6 @@ export default class Gallery extends Component {
 
   render() {
     let gestureResponder = this.gestureResponder;
-
     let images = this.props.images;
     // this.getImageUrl().then((uri)=>{
     //   images = uri

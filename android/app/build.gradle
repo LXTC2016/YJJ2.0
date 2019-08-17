@@ -21,7 +21,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
-        versionName '2.3.6'
+        versionName '2.3.7'
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -29,14 +29,11 @@ android {
 
 	signingConfigs {
         release {
-            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
-                storeFile file(MYAPP_RELEASE_STORE_FILE)
-                storePassword MYAPP_RELEASE_STORE_PASSWORD
-                keyAlias MYAPP_RELEASE_KEY_ALIAS
-                keyPassword MYAPP_RELEASE_KEY_PASSWORD
-            }
+            storeFile file(MYAPP_RELEASE_STORE_FILE)
+            storePassword MYAPP_RELEASE_STORE_PASSWORD
+            keyAlias MYAPP_RELEASE_KEY_ALIAS
+            keyPassword MYAPP_RELEASE_KEY_PASSWORD
         }
-        
     }
 
 
@@ -68,7 +65,6 @@ android {
             // oldName
             def outputFile = output.outputFile
             if (outputFile != null && outputFile.name.endsWith('.apk')){
-                // APP output file name
                 output.outputFile = new File(outputFile.parent, defaultConfig.applicationId+"_build"+MYAPP_APP_BUILD_NUMBER+".apk")
             }
         }
@@ -79,12 +75,13 @@ android {
 dependencies {
     compile project(':react-native-code-push')
     compile project(':react-native-splash-screen')
-    // compile project(':react-native-baidu-push')
+    //compile project(':react-native-baidu-push')
     compile project(':react-native-share')
     compile project(':react-native-fetch-blob')
     compile project(':react-native-video')
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:support-v4:21.0.3'
+     compile 'com.android.support:appcompat-v7:25.0.0'
+//    compile 'com.android.support:support-v7:25.0.0'
     compile 'com.facebook.react:react-native:+'
     compile 'com.facebook.stetho:stetho:1.3.1'
     compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'

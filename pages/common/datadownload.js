@@ -115,7 +115,7 @@ export default class DataDownload extends PureComponent {
       }
     } else {
       if (files.length) {
-        message = `共有 ${total} 个文件需要更新，更新成功 ${success} 个，更新失败 ${failure} 次\n正在更新 ${current} `;
+        message = `共有 ${total} 个文件需要更新，更新成功 ${success} 个\n正在更新 ${current} `;
         process = `${(success / total * 100).toFixed(0)}%`;
       } else {
         let key = constaints.STORAGE_CHECK_UPDATE_TIME_ID_KEY(); // 存储新版本流程走过标识key

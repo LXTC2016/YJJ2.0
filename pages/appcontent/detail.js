@@ -9,6 +9,8 @@ import ReactNative, {
   WebView,
   Alert,
   Platform,
+  Image,
+  TouchableHighlight,
 } from 'react-native';
 import ContentService from '../../services/appcontent.js';
 import FileHelper from '../../helpers/fileHelper.config.js';
@@ -22,7 +24,7 @@ import HorizonVerticalView from '../../components/HorizonVerticalView/Sliding.js
 import Share from '../../helpers/shareHelper.config.js'
 import VideoPlayer from 'react-native-af-video-player';
 import RNFetchBlob from 'react-native-fetch-blob';
-
+import Icon from '../../components/svguri.js';
 const rootDir = Platform.OS === 'ios' ? `${RNFetchBlob.fs.dirs.DocumentDir}/yjj` : `${RNFetchBlob.fs.dirs.SDCardDir}/yjj`;
 
 let contentStyles = null;
@@ -44,7 +46,8 @@ export class ContentDetail extends BaseComponent {
       imageUri: "",
       showindex: 0,
       resultImageList: [],
-      VideoPath: ""
+      VideoPath: "",
+      
     }
     imgPath = "";
   }
@@ -177,11 +180,20 @@ export class ContentDetail extends BaseComponent {
 
 
   shareImage() {
-    if (this.imgPath) {
-      Share.open({
-        url: this.imgPath,
-      })
+    if (!this.imgPath) {
+      // Solve the reason why the first picture cannot be shared
+      let co =this.state.content.imagesLists;
+      if (this.state.content.imagesLists.length > 0) {
+        this.imgPath = (co[0])[0];
+      }
     }
+    this.goShare();
+  }
+
+  goShare() {
+    Share.open({
+      url: this.imgPath,
+    })
   }
 
   render() {
@@ -190,14 +202,15 @@ export class ContentDetail extends BaseComponent {
     if (this.state.content != null) {
       content = this.state.content;
     }
-
+    const { navigate } = this.props.navigation;
     const defaultIndex = this.props.navigation.state.params.defaultIndex;
     if (content == null) return null;
+    // company description(picture)
     if (content.TopicContentType == 1) {//图片轮滑
       if (content.imagesLists) {
         return (
           <View style={contentStyles.imgbgimg}>
-            {content != null && content.imagesLists.length > 0 ?
+            {(content != null && content.imagesLists.length > 0) ?
               <View style={contentStyles.imgbgimg}>
                 <HorizonVerticalView style={contentStyles.imgbgimg}
                   defaultIndex={defaultIndex ? defaultIndex : 0}
@@ -212,11 +225,20 @@ export class ContentDetail extends BaseComponent {
                 <TouchableOpacity activeOpacity={0.8} onPress={() => this.shareImage()} style={contentStyles.Leftbutton}>
                   <Text style={contentStyles.lefttext}>分享</Text>
                 </TouchableOpacity>
+                {/** back to index page */}
+                <TouchableOpacity activeOpacity={0.8} style={[contentStyles.Leftbutton, { marginTop: getResponsiveValue(130)}]} onPress={() => {
+                  navigate('Home')
+                }}>
+                  {/* <SvgUri width={getResponsiveValue(36)} height={getResponsiveValue(36)} fill={StyleConfig.SecondaryFront} source={"combination"} /> */}
+                  <Image style={{ width: getResponsiveValue(45), height: getResponsiveValue(45) }}
+                    source={require(`../../assets/icons/indexBtn.png`)}
+                  />
+                </TouchableOpacity>
               </View>
               : null}
           </View >
         );
-      }
+      } // company description(video)
     } else if (content.TopicContentType == 3) {
       let videPath = this.state.VideoPath;
       if (!videPath) {
@@ -224,7 +246,14 @@ export class ContentDetail extends BaseComponent {
       }
       return (
         <View style={{ flex: 1, justifyContent: "center" }}>
-          <CustomHeader navigation={this.props.navigation} />
+          {/* <CustomHeader navigation={this.props.navigation} /> */}
+          <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.goBack()} style={contentStyles.backBarButton}>
+            <Image
+              style={{width: getResponsiveValue(45), height: getResponsiveValue(45)}}
+              source={require('../../assets/icons/back.png')}
+            />
+          {/* <Text style={contentStyles.lefttext}>分享</Text> */}
+          </TouchableOpacity>
           <VideoPlayer
             lockPortraitOnFsExit={true}
             autoPlay={true}
@@ -292,10 +321,14 @@ export default class ContentDetailPage extends PureComponent {
     if (this.state.content != null && this.state.content.TopicContentType == 4) {
       return (
         <View style={[contentStyles.bgimg, { backgroundColor: '#fff' }]} >
-          <CustomHeader title={headTitle.substring(0, this.CharCount)} navigation={this.props.navigation} />
+          {/* <CustomHeader title={headTitle.substring(0, this.CharCount)} navigation={this.props.navigation} /> */}
+          <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.goBack()} style={contentStyles.Leftbutton}>
+                  <Text style={contentStyles.lefttext}>分享</Text>
+                </TouchableOpacity>
           {content}
         </View>);
     } else {
+      {/** pic */}
       return (
         <ImageBackground style={contentStyles.bgimg} source={CompanyConfig.CompanyBGImg}>
           <CustomHeader title={headTitle.substring(0, this.CharCount)} navigation={this.props.navigation} />
@@ -410,11 +443,15 @@ function setStyle() {
       position: 'absolute',
       alignItems: 'center',
       justifyContent: 'center',
-      width: getResponsiveValue(65),
-      height: getResponsiveValue(65),
-      borderRadius: getResponsiveValue(32.5),
-      backgroundColor: 'red'
-    }
+      width: getResponsiveValue(86),
+      height: getResponsiveValue(86),
+      borderRadius: getResponsiveValue(43),
+      backgroundColor: 'white',
+      zIndex:100,
+      top: getResponsiveFontSize(20),
+      left: getResponsiveFontSize(20),
+      opacity: 0.5
+    },
   });
   return contentStyles;
 }

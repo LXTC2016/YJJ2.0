@@ -226,13 +226,13 @@ class ProfileItem extends React.Component {
                     data: rresult.data
                 });
                 global.AppAuthentication = rresult.data;
-                global.storage.load({
-                    key: 'BaiduPushChannelID',
-                    autoSync: false
-                }).then(channelid => {
-                    common.AddDeviceToBaiduPushTag(channelid).then((result) => {
-                    })
-                });
+                // global.storage.load({
+                //     key: 'BaiduPushChannelID',
+                //     autoSync: false
+                // }).then(channelid => {
+                //     common.AddDeviceToBaiduPushTag(channelid).then((result) => {
+                //     })
+                // });
                 let menuList = rresult.data.MenuList;
                 formatMenu(menuList);
                 global.storage.save({ key: "AppMenu", data: menuList });

@@ -38,6 +38,7 @@ export const DefaultCompanyConfig = Object.assign(
         CompanyBGImgWithLogo: require("../assets/images/private/bglogo.jpg"),//打包时，直接下载新文件到对应位置，打到包中。
         CompanyLogo: require("../assets/images/logo.png"),//打包时，直接下载新文件到对应位置，打到包中。
         LoginBGImg: require("../assets/images/private/loginbg.jpg"),//打包时，直接下载新文件到对应位置，打到包中。
+        companySysNo: 0,
         IOSAppID: "",// 从服务器配置中读取
         StyleColor: {
             TitleBackground: null, //标题栏背景
@@ -72,7 +73,7 @@ export const DefaultCompanyConfig = Object.assign(
             return CompanyAppConfig.CompanyID == '00000000-0000-0000-0000-000000000000';
         }
     }, CompanyAppConfig);
-window.console.log(DefaultCompanyConfig.CompanyID)
+
 const CompanyConfig = global.CompanyConfig;
 
 
@@ -145,17 +146,15 @@ export const CompanyConfigHelper = {
             CompanyConfig.StyleColor.TabFront = CompanyConfig.AppColor.MainFront;
             CompanyConfig.StyleColor.HomePageA.MenuFront = CompanyConfig.AppColor.MainFront;
             CompanyConfig.StyleColor.HomePageA.MenuItemPressBackground = CompanyConfig.AppColor.OnPressSecondary;
-            /**
-             *  check file to fetch images
-             */
+
             let plist = [];
             let imgNameList = []
             CompanyConfigHelper.findParameterValueByName(parameters, "CompanyBGImg", (v) => {
                 if (v != null && v != "") {
                     // 如果名称相同，表示已经打到包中，则不用在线取得图片
                     var imgName = CompanyConfigHelper.getFileName(v).toLowerCase();
-                    if (CompanyConfig["CompanyBGImg"]) {
-                        if (imgName == CompanyConfig["CompanyBGImg"].toLowerCase()) {
+                    if (CompanyConfig["CompanyBGImg_Name"]) {
+                        if (imgName == CompanyConfig["CompanyBGImg_Name"].toLowerCase()) {
                             return;
                         }
                     }
@@ -204,6 +203,7 @@ export const CompanyConfigHelper = {
                     FileHelper.fetchFile(v);
                 }
             });
+
             global.CompanyConfig = CompanyConfig;
             Promise.all(plist).then(r => {
                 for (let i = 0; i < r.length; i++) {
@@ -281,5 +281,4 @@ if (CompanyConfig == null || CompanyConfig.CompanyID == null) {
     CompanyConfig.StyleColor.HomePageA.MenuItemPressBackground = CompanyConfig.AppColor.OnPressSecondary;
     CompanyConfigHelper.ready();
 }
-window.console.log(DefaultCompanyConfig.CompanyID);
 export default CompanyConfig; 

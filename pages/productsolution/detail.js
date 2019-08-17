@@ -5,7 +5,8 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  Animated, Platform
+  Animated, Platform,
+  Image
 } from 'react-native';
 import ProductService from '../../services/product.js';
 import ProductSolutionService from '../../services/productsolution.js';
@@ -276,6 +277,15 @@ export default class ProductSolutionDetail extends Component {
               }}>
                 <Text style={styles.lefttext}>幻灯片</Text>
               </TouchableOpacity>
+              {/** back to index page */}
+              <TouchableOpacity activeOpacity={0.8} style={styles.Leftbutton} onPress={() => {
+                navigate('Home')
+              }}>
+                {/* <SvgUri width={getResponsiveValue(36)} height={getResponsiveValue(36)} fill={StyleConfig.SecondaryFront} source={"combination"} /> */}
+                <Image style={{ width: getResponsiveValue(45), height: getResponsiveValue(45) }}
+                  source={require(`../../assets/icons/indexBtn.png`)}
+                />
+              </TouchableOpacity>
             </View> : null
         }
         {
@@ -345,14 +355,19 @@ export class AnimatedWap extends PureComponent {
         toValue: { x: 0, y: 0 } //animate to top right
       }),
     ]).start();
-    this.state.seat = 1;
+    //this.state.seat = 1;
+    this.setState({seat: 1});
   }
 
 
   UNSAFE_componentWillMount() {
     KeepAwake.activate();
-    this.state.productInfo = this.props.model
-    this.state.sultionInfo = this.props.model
+    this.setState({
+      productInfo: this.props.model,
+      sultionInfo: this.props.model
+    })
+    // this.state.productInfo = this.props.model
+    // this.state.sultionInfo = this.props.model
   }
 
   componentWillUnmount() {
@@ -463,11 +478,34 @@ export class AnimatedWap extends PureComponent {
     }
     return this.state.productInfo;
   }
+
+  getSpaceCountPrice() {
+    let model = this.getmodel();
+    if (model) {
+      let productList = model.ProductList;
+      let countPrice = 0;
+      productList.forEach(item => {
+        if (item.PromotionPrice == null || item.PromotionPrice == 0) {
+          countPrice = countPrice + item.SalePrice;
+        } else {
+          countPrice = countPrice + item.PromotionPrice;
+        }
+        // if (item.PromotionPrice != item.SalePrice && item.PromotionPrice != 0) {
+          
+        // }
+      })
+      if (model.SalePrice < countPrice) {
+        return countPrice;
+      }
+    }
+    return model.SalePrice;
+  }
+
   render() {
     setStyle();
     let model = this.getmodel();
     if (!model) model = {};
-    let ProductList = this.state.ProductList
+    let ProductList = this.state.ProductList;
     if (typeof (ProductList) == 'string') {
       ProductList = JSON.parse(ProductList);
     }
@@ -493,6 +531,7 @@ export class AnimatedWap extends PureComponent {
               chartNum={this.state.chartNum}
             ></ProductsCheck> : null
           }
+          {/* space solution (right bar) and plz check the rule that is workspace */}
           <View style={styles.AnimatedView}>
             <View style={styles.right}>
               <TouchableOpacity activeOpacity={0.8} style={(this.state.selectSysNo <= 0 ? styles.SelectProuuctWap : styles.righttextwap)} onPress={() => {
@@ -512,7 +551,6 @@ export class AnimatedWap extends PureComponent {
                 this.startAnimation(0);
               }}>
                 <Text style={(this.state.selectSysNo <= 0 ? styles.rightSelecttext : styles.righttext)} >空间方案</Text>
-                {/* <Text style={[styles.righttext]} >空间方案</Text> */}
               </TouchableOpacity>
               {<ScrollView
                 automaticallyAdjustContentInsets={false}
@@ -566,9 +604,6 @@ export class AnimatedWap extends PureComponent {
                           </View>
 
                         ) : (<Text style={styles.price}>售价：{model.PromotionPrice}</Text>)}
-
-
-
                       <Text style={styles.descriptionText}>型号：{model.SKUModel}</Text>
                       <Text style={styles.descriptionText}>规格：{this.getProductLHW(model)}</Text>
                       <Text style={styles.descriptionText}>风格：{model.StyleName}</Text>
@@ -588,7 +623,7 @@ export class AnimatedWap extends PureComponent {
                         <Text style={styles.productName}>{model ? model.Name : ''}</Text>
                       </View>
                       <View style={styles.VenterView}>
-                        <Text style={styles.price}>售价：{model ? model.SalePrice : ''}</Text>
+                        <Text style={styles.price}>售价：{model ? this.getSpaceCountPrice() : ''}</Text>
                         <Text style={styles.descriptionText}>系列：{model ? model.SeriesName : ''}</Text>
                         <Text style={styles.descriptionText}>风格：{model ? model.StyleName : ''}</Text>
                         <Text style={styles.descriptionText}>卖点：</Text>

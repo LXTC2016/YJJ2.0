@@ -1315,14 +1315,14 @@ export default class Login extends Component {
                         global.NeedLogin = false;
                         //添加设备到百度推送标签组中
                         let common = new CommonService();
-                        storage.load({
-                          key: 'BaiduPushChannelID',
-                          autoSync: false
-                        }).then(channelid => {
-                          common.AddDeviceToBaiduPushTag(channelid).then((result) => {
-                            //
-                          })
-                        })
+                        // storage.load({
+                        //   key: 'BaiduPushChannelID',
+                        //   autoSync: false
+                        // }).then(channelid => {
+                        //   common.AddDeviceToBaiduPushTag(channelid).then((result) => {
+                        //     //
+                        //   })
+                        // })
                         let menuList = self.successLoginData.MenuList;
                         formatMenu(menuList);
                         global.storage.save({ key: "AppMenu", data: menuList });
@@ -1507,16 +1507,16 @@ export default class Login extends Component {
             });
             global.AppAuthentication = rresult.data;
             global.NeedLogin = false;
-            //添加设备到百度推送标签组中
-            let common = new CommonService();
-            storage.load({
-              key: 'BaiduPushChannelID',
-              autoSync: false
-            }).then(channelid => {
-              common.AddDeviceToBaiduPushTag(channelid).then((result) => {
-                //
-              })
-            })
+            // //添加设备到百度推送标签组中
+            // let common = new CommonService();
+            // storage.load({
+            //   key: 'BaiduPushChannelID',
+            //   autoSync: false
+            // }).then(channelid => {
+            //   common.AddDeviceToBaiduPushTag(channelid).then((result) => {
+            //     //
+            //   })
+            // })
             let menuList = rresult.data.MenuList;
             formatMenu(menuList);
             global.storage.save({ key: "AppMenu", data: menuList });

@@ -331,6 +331,7 @@ export default class ProductDetails extends Component {
         {
           self.state.FirstLoad && self.state.photos.length > 0 ? (
             <LeftMenu ref="LeftMenu" shareImage={() => { self.shareImage() }} tochart={() => { navigate('ShoppingCart') }} model={self.state.productInfo}
+              navigation = { this.props.navigation }
               startCarousel={() => { this.startCarousel(1800) }}
               pList={self.state.ProductCommon.CommonProductList} parent={self}
               // onProductClick={(productImgs, shouldfetchFile, SysNo) => { this.setPageList(productImgs, shouldfetchFile, SysNo) }}
@@ -395,7 +396,6 @@ export class LeftMenu extends Component {
   }
   componentDidMount() {
     let model = this.props.model;
-
     if (model.Properties) {
       let PropertiesInfo = null;
       if (typeof (model.Properties) == 'string') {
@@ -952,7 +952,6 @@ export class LeftMenu extends Component {
     setStyle();
 
     this.getProductmodel();
-
     let model = this.state.productInfo;
 
     if ((!model.ProductImages) && this.state.ImageList && this.state.ImageList.data && this.state.ImageList.SysNo == model.SysNo) {
@@ -976,6 +975,7 @@ export class LeftMenu extends Component {
     if (model.ProductList && typeof model.ProductList == 'string') {
       model.ProductList = JSON.parse(model.ProductList);
     };
+    const { navigate } = this.props.navigation
     // debugger
     if (this.state.isShowAll) {
       return (
@@ -1103,6 +1103,7 @@ export class LeftMenu extends Component {
                   <SvgUri width={getResponsiveValue(36)} height={getResponsiveValue(36)} fill={StyleConfig.SecondaryFront} source={"combination"} />
                 </TouchableOpacity> : null
             }
+            {/* 幻灯片 */}
             <TouchableOpacity activeOpacity={0.8} style={[styles.introducebtn, { backgroundColor: StyleConfig.Main }]} onPress={() => {
               if (this.props.startCarousel) {
                 this.props.startCarousel()
@@ -1113,6 +1114,16 @@ export class LeftMenu extends Component {
                 source={require(`../../assets/icons/slide.png`)}
               />
             </TouchableOpacity>
+            {/** back to index page */}
+            <TouchableOpacity activeOpacity={0.8} style={[styles.introducebtn, { backgroundColor: StyleConfig.Main }]} onPress={() => {
+              navigate('Home')
+            }}>
+              {/* <SvgUri width={getResponsiveValue(36)} height={getResponsiveValue(36)} fill={StyleConfig.SecondaryFront} source={"combination"} /> */}
+              <Image style={{ width: getResponsiveValue(45), height: getResponsiveValue(45) }}
+                source={require(`../../assets/icons/indexBtn.png`)}
+              />
+            </TouchableOpacity>
+            {/* 分享 */}
             {this.state.agreeShare && this.state.IsHasImage ? <TouchableOpacity activeOpacity={0.8} style={[styles.introducebtn, { backgroundColor: StyleConfig.Main }]} onPress={() => {
               this.shareImage()
               //this.startAnimation();
@@ -1755,6 +1766,9 @@ export class AnimatedWap extends Component {
   }
   getContextStr(model) {
     let str = "";
+    if (model.SeriesName) {
+      str += "系列：" + model.SeriesName + "  "
+    }
     str += "型号：" + model.SKUModel + "  "
     if (model.Properties.length > 0) {
       str += "规格：" + this._getPro(model.GroupProperties)
@@ -1769,6 +1783,17 @@ export class AnimatedWap extends Component {
     }
     return str;
   }
+  getSalePoint(model) {
+    let str = "";
+    if (model.Material) {
+      str += "材质：" + model.Material + "  "
+    }
+    if (model.StyleName) {
+      str += "风格：" + model.StyleName + "  "
+    }
+    return str;
+  }
+
   render() {
     setStyle();
     this.getProductmodel();
@@ -1805,9 +1830,9 @@ export class AnimatedWap extends Component {
       model.Properties = JSON.parse(model.Properties);
     }
 
-
     if (this.state.isShowAll) {
       return (
+        // 图片详情
         <Animated.View style={this.getStyle()}>
           <View style={[styles.AnimatedView]}>
             <View style={styles.description}>
@@ -1832,12 +1857,15 @@ export class AnimatedWap extends Component {
                         numberOfLines={1}
                       >{model.ProductName}</Text>
                       <Text style={[styles.descriptionText, { marginRight: getResponsiveValue(26), fontSize: getResponsiveFontSize(24), color: '#3a90e7', paddingTop: getResponsiveValue(6) }]}>{this.getContextStr(model)}</Text>
-
+                      <Text style={[styles.descriptionText, { marginRight: getResponsiveValue(26), fontSize: getResponsiveFontSize(24), color: '#3a90e7', paddingTop: getResponsiveValue(6) }]}>
+                        { this.getSalePoint(model) }
+                      </Text>
                     </View>
-                    <Text style={[styles.miaosuText,]}>产品介绍：{joinstr([model.SeriesName, model.Material, model.StyleName, model.ProductNote])}
+                    <Text style={[styles.miaosuText,]}>
+                      { model.ProductNote && "产品特点: " + model.ProductNote }
+                      { /*"产品特点: " + model.ProductNote */}
                     </Text>
-
-                  </ScrollView>)//区分展示 商品介绍 或者 规格
+                  </ScrollView>)// 规格
                     : (
                       <ScrollView
                         automaticallyAdjustContentInsets={false}
